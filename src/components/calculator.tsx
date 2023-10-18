@@ -1,11 +1,43 @@
 import { useState } from "react"
+import { useForm, SubmitHandler } from "react-hook-form"
 
 export default function Calculator() {
-  const [agility, setAgility] = useState(0)
-  const [strength, setStrength] = useState(51)
-  const [will, setWill] = useState(0)
-  const [knowledge, setKnowledge] = useState(0)
-  const [physicalPowerFromGear, setPhysicalPowerFromGear] = useState(3)
+  enum ClassEnum {
+    fighter = "fighter",
+    cleric = "cleric",
+    rogue = "rogue",
+    bard = "bard",
+    wizard = "wizard",
+    warlock = "warlock",
+    ranger = "ranger",
+    barbarian = "barbarian",
+    // druid = "druid"
+  }
+
+  // type Inputs = {
+  //   strength: number
+  //   agility: number
+  //   will: number
+  //   knowledge: number
+  //   weaponDamage: number
+  //   additionalDamage: number
+  //   trueDamage: number
+  //   class: ClassEnum
+  // }
+
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   formState: { errors },
+  // } = useForm<Inputs>()
+  // const onSubmit: SubmitHandler<Inputs> = (data) => console.log(data)
+
+  const [agility, setAgility] = useState("")
+  const [strength, setStrength] = useState("")
+  const [will, setWill] = useState("")
+  const [knowledge, setKnowledge] = useState("")
+  const [physicalPowerFromGear, setPhysicalPowerFromGear] = useState("3")
+  const [baseDamage, setBaseDamage] = useState("")
   // const [resourcefulness, setResourcefulness] = useState(0)
 
   //Defines the brackets of phyiscal power bonus by the beginning and end value of the bracket, the
@@ -56,7 +88,7 @@ export default function Calculator() {
   ]
 
   function calculatePowerBonus(): number {
-    const powerBonus = strength + physicalPowerFromGear
+    const powerBonus = parseInt(strength) + parseInt(physicalPowerFromGear)
     //Find which stat bracket the power bonus falls into
     const bracket = physPowerBonusBrackets.find(
       (b) => b.start <= powerBonus && b.end >= powerBonus
@@ -84,7 +116,6 @@ export default function Calculator() {
   // }
 
   const calculateDmg = (
-    baseDmg: number,
     WpnOrMagDmgFromGear: number,
     additionalDmg: number,
     locationBonus: number,
@@ -92,7 +123,7 @@ export default function Calculator() {
     projectileReduction: number,
     trueDmg: number
   ): number => {
-    const totalBaseDmg = baseDmg + WpnOrMagDmgFromGear
+    const totalBaseDmg = parseInt(baseDamage) + WpnOrMagDmgFromGear
     const finalPowerBonusMultiplier = calculatePowerBonus() / 100
 
     return (
@@ -106,10 +137,76 @@ export default function Calculator() {
     )
   }
 
+  function handleChangeStrength(e: React.ChangeEvent<HTMLInputElement>): void {
+    //If the string parsed as an integer is a number
+    if (!isNaN(parseInt(e.target.value))) {
+      setStrength(e.target.value)
+    } else if (e.target.value === "") {
+      setStrength("")
+    }
+  }
+
+  function handleChangeState(
+    e: React.ChangeEvent<HTMLInputElement>,
+    stateSetter: React.Dispatch<React.SetStateAction<string>>
+  ) {
+    //If the string parsed as an integer is a number
+    if (!isNaN(parseInt(e.target.value))) {
+      stateSetter(e.target.value)
+    } else if (e.target.value === "") {
+      stateSetter("")
+    }
+  }
+
   return (
     <div className="flex flex-col gap-10">
-      <div>Calculated dmg is: {calculateDmg(24, 0, 0, 1, 1, 1, 0)}</div>
+      <form>
+        <label>Strength</label>
+        <input
+          className="text-black"
+          value={strength}
+          onChange={(e) => handleChangeState(e, setStrength)}
+        />
+
+        <label>Agility</label>
+        <input
+          className="text-black"
+          value={agility}
+          onChange={(e) => handleChangeState(e, setAgility)}
+        />
+
+        <label>Will</label>
+        <input type="number" className="text-black" />
+
+        <label>Knowledge</label>
+        <input type="number" className="text-black" />
+
+        <label>Weapon Damage</label>
+        <input
+          // type="number"
+          className="text-black"
+          value={baseDamage}
+          // onChange={(e) => setBaseDamage(parseInt(e.target.value))}
+          // onBlur={handleBlurBaseDamage}
+        />
+
+        <label>Additional Damage</label>
+        <input type="number" className="text-black" />
+
+        <label>True Damage</label>
+        <input type="number" className="text-black" />
+
+        {/* <select ("class")></form>
+          <option value="fighter">fighter</option>
+          <option value="wizard">wizard</option>
+          <option value="rogue">rogue</option>
+        </select> */}
+      </form>
+      <div>Calculated dmg is: {calculateDmg(0, 0, 1, 1, 1, 0)}</div>
       <div>Calculated power bonus is {calculatePowerBonus()}</div>
+      <div>
+        Strength: {strength} {typeof strength}
+      </div>
     </div>
   )
 }
