@@ -48,6 +48,7 @@ export default function Calculator() {
   const [weaponOrMagicDamage, setWeaponOrMagicDamage] = useState("0")
   const [physicalPower, setPhysicalPower] = useState("0")
   const [magicalPower, setMagicalPower] = useState("0")
+  const [targetArmorRating, setTargetArmorRating] = useState("0")
   // const [resourcefulness, setResourcefulness] = useState(0)
 
   //Defines the brackets of phyiscal power bonus by the beginning and end value of the bracket, the
@@ -97,6 +98,107 @@ export default function Calculator() {
     },
   ]
 
+  const armorRatingBrackets = [
+    {
+      start: -300,
+      end: -3,
+      min: -619,
+      max: -25,
+      step: 2,
+    },
+    {
+      start: -3,
+      end: 22,
+      min: -25,
+      max: 0,
+      step: 1,
+    },
+    {
+      start: 22,
+      end: 31,
+      min: 0,
+      max: 4.5,
+      step: 0.5,
+    },
+    {
+      start: 31,
+      end: 42,
+      min: 4.5,
+      max: 8.9,
+      step: 0.4,
+    },
+    {
+      start: 42,
+      end: 52,
+      min: 8.9,
+      max: 11.9,
+      step: 0.3,
+    },
+    {
+      start: 52,
+      end: 62,
+      min: 11.9,
+      max: 13.9,
+      step: 0.2,
+    },
+    {
+      start: 62,
+      end: 112,
+      min: 13.9,
+      max: 18.9,
+      step: 0.1,
+    },
+    {
+      start: 112,
+      end: 175,
+      min: 18.9,
+      max: 31.5,
+      step: 0.2,
+    },
+    {
+      start: 175,
+      end: 262,
+      min: 31.5,
+      max: 57.6,
+      step: 0.3,
+    },
+    {
+      start: 262,
+      end: 317,
+      min: 57.6,
+      max: 68.6,
+      step: 0.2,
+    },
+    {
+      start: 317,
+      end: 400,
+      min: 68.6,
+      max: 76.9,
+      step: 0.1,
+    },
+    {
+      start: 400,
+      end: 424,
+      min: 76.9,
+      max: 78.1,
+      step: 0.05,
+    },
+    {
+      start: 424,
+      end: 450,
+      min: 78.1,
+      max: 78.75,
+      step: 0.025,
+    },
+    {
+      start: 450,
+      end: 500,
+      min: 78.75,
+      max: 79.75,
+      step: 0.02,
+    },
+  ]
+
   function calculatePowerBonus(): number {
     const powerBonus = parseInt(strength) + parseInt(physicalPower)
     //Find which stat bracket the power bonus falls into
@@ -106,7 +208,25 @@ export default function Calculator() {
     if (typeof bracket !== "undefined") {
       return bracket.max - (bracket.end - powerBonus) * bracket.step
     }
+    if (powerBonus >= 100) {
+      return 60
+    }
     //default case should not ever be reached -- change to throw error?
+    return 0
+  }
+
+  function calculatePhysicalDamageReduction(): number {
+    const armorRating = parseInt(targetArmorRating)
+    const bracket = armorRatingBrackets.find(
+      (b) => b.start <= armorRating && b.end >= armorRating
+    )
+    if (typeof bracket !== "undefined") {
+      return bracket.max - (bracket.end - armorRating) * bracket.step
+    }
+    if (armorRating >= 500) {
+      return 80
+    }
+    //default case should not ever be reached
     return 0
   }
 
@@ -125,10 +245,7 @@ export default function Calculator() {
   //   return -0.8
   // }
 
-  const calculateDmg = (
-    dmgReduction: number,
-    projectileReduction: number
-  ): CalculationResult => {
+  const calculateDmg = (projectileReduction: number): CalculationResult => {
     const totalBaseDmg = parseInt(baseDamage) + parseInt(weaponOrMagicDamage)
     const finalPowerBonusMultiplier = calculatePowerBonus() / 100
     const additionalDmg = parseInt(additionalDamage)
@@ -136,6 +253,7 @@ export default function Calculator() {
     const headshotMultiplier = 1.5
     const bodyshotMultiplier = 1
     const limbshotMultiplier = 0.5
+    const dmgReduction = calculatePhysicalDamageReduction() / 100
 
     const result = {
       head: Math.round(
@@ -143,7 +261,7 @@ export default function Calculator() {
           totalBaseDmg +
           additionalDmg) *
           headshotMultiplier *
-          dmgReduction *
+          (1 - dmgReduction) *
           projectileReduction +
           trueDmg
       ),
@@ -152,7 +270,7 @@ export default function Calculator() {
           totalBaseDmg +
           additionalDmg) *
           bodyshotMultiplier *
-          dmgReduction *
+          (1 - dmgReduction) *
           projectileReduction +
           trueDmg
       ),
@@ -161,7 +279,7 @@ export default function Calculator() {
           totalBaseDmg +
           additionalDmg) *
           limbshotMultiplier *
-          dmgReduction *
+          (1 - dmgReduction) *
           projectileReduction +
           trueDmg
       ),
@@ -201,7 +319,6 @@ export default function Calculator() {
 
         <label className="text-white">Will</label>
         <input
-          type="number"
           className="text-black"
           value={will}
           onChange={(e) => handleChangeState(e, setWill)}
@@ -209,7 +326,6 @@ export default function Calculator() {
 
         <label className="text-white">Knowledge</label>
         <input
-          type="number"
           className="text-black"
           value={knowledge}
           onChange={(e) => handleChangeState(e, setKnowledge)}
@@ -231,7 +347,6 @@ export default function Calculator() {
 
         <label className="text-white">Additional Damage</label>
         <input
-          type="number"
           className="text-black"
           value={additionalDamage}
           onChange={(e) => handleChangeState(e, setAdditionalDamage)}
@@ -239,7 +354,6 @@ export default function Calculator() {
 
         <label className="text-white">True Damage</label>
         <input
-          type="number"
           className="text-black"
           value={trueDamage}
           onChange={(e) => handleChangeState(e, setTrueDamage)}
@@ -247,7 +361,6 @@ export default function Calculator() {
 
         <label className="text-white">Physical Power</label>
         <input
-          type="number"
           className="text-black"
           value={physicalPower}
           onChange={(e) => handleChangeState(e, setPhysicalPower)}
@@ -255,10 +368,16 @@ export default function Calculator() {
 
         <label className="text-white">Magical Power</label>
         <input
-          type="number"
           className="text-black"
           value={magicalPower}
           onChange={(e) => handleChangeState(e, setMagicalPower)}
+        />
+
+        <label className="text-white">Target&apos;s Armor Rating</label>
+        <input
+          className="text-black"
+          value={targetArmorRating}
+          onChange={(e) => handleChangeState(e, setTargetArmorRating)}
         />
 
         {/* <select ("class")></form>
@@ -268,11 +387,14 @@ export default function Calculator() {
         </select> */}
       </form>
       <div className="text-white">
-        Calculated dmg is: Head - {calculateDmg(1, 1).head}, Body -{" "}
-        {calculateDmg(1, 1).body}, Limb - {calculateDmg(1, 1).limb}
+        Calculated dmg is: Head - {calculateDmg(1).head}, Body -{" "}
+        {calculateDmg(1).body}, Limb - {calculateDmg(1).limb}
       </div>
       <div className="text-white">
         Calculated power bonus is {calculatePowerBonus()}
+        <br />
+        Calculated pdr is{" "}
+        {Math.round(calculatePhysicalDamageReduction() * 100) / 100 + "%"}
       </div>
       <div className="text-white">
         Strength: {strength} {typeof strength}
