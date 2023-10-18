@@ -185,21 +185,21 @@ export default function Calculator() {
   return (
     <div className="flex flex-col gap-10">
       <form className="flex gap-4 flex-col">
-        <label>Strength</label>
+        <label className="text-white">Strength</label>
         <input
           className="text-black"
           value={strength}
           onChange={(e) => handleChangeState(e, setStrength)}
         />
 
-        <label>Agility</label>
+        <label className="text-white">Agility</label>
         <input
           className="text-black"
           value={agility}
           onChange={(e) => handleChangeState(e, setAgility)}
         />
 
-        <label>Will</label>
+        <label className="text-white">Will</label>
         <input
           type="number"
           className="text-black"
@@ -207,7 +207,7 @@ export default function Calculator() {
           onChange={(e) => handleChangeState(e, setWill)}
         />
 
-        <label>Knowledge</label>
+        <label className="text-white">Knowledge</label>
         <input
           type="number"
           className="text-black"
@@ -215,21 +215,21 @@ export default function Calculator() {
           onChange={(e) => handleChangeState(e, setKnowledge)}
         />
 
-        <label>Base Weapon Damage</label>
+        <label className="text-white">Base Weapon Damage</label>
         <input
           className="text-black"
           value={baseDamage}
           onChange={(e) => handleChangeState(e, setBaseDamage)}
         />
 
-        <label>Additional Weapon Damage</label>
+        <label className="text-white">Additional Weapon Damage</label>
         <input
           className="text-black"
           value={weaponOrMagicDamage}
           onChange={(e) => handleChangeState(e, setWeaponOrMagicDamage)}
         />
 
-        <label>Additional Damage</label>
+        <label className="text-white">Additional Damage</label>
         <input
           type="number"
           className="text-black"
@@ -237,7 +237,7 @@ export default function Calculator() {
           onChange={(e) => handleChangeState(e, setAdditionalDamage)}
         />
 
-        <label>True Damage</label>
+        <label className="text-white">True Damage</label>
         <input
           type="number"
           className="text-black"
@@ -245,7 +245,7 @@ export default function Calculator() {
           onChange={(e) => handleChangeState(e, setTrueDamage)}
         />
 
-        <label>Physical Power</label>
+        <label className="text-white">Physical Power</label>
         <input
           type="number"
           className="text-black"
@@ -253,7 +253,7 @@ export default function Calculator() {
           onChange={(e) => handleChangeState(e, setPhysicalPower)}
         />
 
-        <label>Magical Power</label>
+        <label className="text-white">Magical Power</label>
         <input
           type="number"
           className="text-black"
@@ -267,12 +267,14 @@ export default function Calculator() {
           <option value="rogue">rogue</option>
         </select> */}
       </form>
-      <div>
+      <div className="text-white">
         Calculated dmg is: Head - {calculateDmg(1, 1).head}, Body -{" "}
         {calculateDmg(1, 1).body}, Limb - {calculateDmg(1, 1).limb}
       </div>
-      <div>Calculated power bonus is {calculatePowerBonus()}</div>
-      <div>
+      <div className="text-white">
+        Calculated power bonus is {calculatePowerBonus()}
+      </div>
+      <div className="text-white">
         Strength: {strength} {typeof strength}
       </div>
     </div>
