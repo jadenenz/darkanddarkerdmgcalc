@@ -562,7 +562,7 @@ export default function Calculator() {
 
   return (
     <div className="flex flex-col gap-10">
-      <form className="flex gap-4 flex-col flex-wrap">
+      <form className="grid gap-4 grid-cols-2">
         <label className="text-white">Strength</label>
         <input
           className="text-black"
